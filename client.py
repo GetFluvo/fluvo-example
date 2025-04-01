@@ -17,11 +17,10 @@ mapping =  {
     'city' : mapper.val('city'),
     'zip' : mapper.val('zip code'),
     'country_id/id' : mapper.map_val('country', country_map),
-    'customer' : mapper.const('1'),
     'lang' : mapper.map_val('Language', lang_map),
-    'image' : mapper.binary("Image", "origin/img/"),
+    'image_1920' : mapper.binary("Image", "origin/img/"),
     'create_uid': mapper.val('Create BY'),
-    'create_date': mapper.val('Create ON', 
+    'create_date': mapper.val('Create ON',
         postprocess=lambda x: datetime.strptime(x, "%d/%m/%y").strftime("%Y-%m-%d 00:00:00")),
     'category_id/id': mapper.m2m(PARTNER_CATEGORY_PREFIX, 'Tag', 'Fidelity Grade'),
 }
@@ -44,4 +43,4 @@ processor.process(mapping, 'data%sres.partner.csv' % os.sep, { 'worker' : 2, 'ba
 #Step 5: Define output and import parameter
 processor.write_to_file("1_client.sh", python_exe='', path='')
 
-print 'Client Done'
+print('Client Done')

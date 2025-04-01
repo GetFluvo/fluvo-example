@@ -3,7 +3,7 @@ from odoo_csv_tools.lib import mapper
 from odoo_csv_tools.lib.transform import ProductProcessorV10
 from prefix import *
 
-context = {'create_product_product' : True, 'tracking_disable' : True}
+context = {'create_product_product' : False, 'tracking_disable' : True}
 
 #STEP 1 : read the needed file(s)
 processor = ProductProcessorV10('origin/product.csv', delimiter=',')
@@ -28,30 +28,31 @@ template_map = {
  'id' : mapper.m2o(TEMPLATE_PREFIX, 'ref'),
  'categ_id/id': mapper.m2o(CATEGORY_PREFIX, 'Sub Category'),
  'standard_price': mapper.num('cost'),
- 'lst_price': mapper.num('public_price'),
+ 'list_price': mapper.num('public_price'),
  'default_code': mapper.val('ref'),
  'name': mapper.val('name'),
 }
 processor.process(template_map, 'data/product.template.csv', { 'worker' : 4, 'batch_size' : 10,
                                                                'context' : context}, 'set')
-                                                               
+
 vendor_map = {
     'id': mapper.m2o(SUPPLIER_INFO_PREFIX, 'ref'),
-    'name/id': mapper.m2o(SUPPLIER_PREFIX, 'vendor'),
+    'partner_id/id': mapper.m2o(SUPPLIER_PREFIX, 'vendor'),
     'price': mapper.num('public_price'),
-    'product_tmpl_id/id':  mapper.m2o(TEMPLATE_PREFIX, 'ref'), 
+    'product_tmpl_id/id':  mapper.m2o(TEMPLATE_PREFIX, 'ref'),
 
 }
 
 processor.process(vendor_map, 'data/product.supplierinfo.csv', { 'worker' : 4, 'batch_size' : 10, 'groupby' : 'product_tmpl_id/id',
                                                                'context' : context}, 'set')
-                                                                
-#STEP 4: Attribute List 
+
+#STEP 4: Attribute List
 attribute_list = ['Color', 'Gender', 'Size_H', 'Size_W']
+
 #Generate a csv with the id, name for attribute based on the column
 processor.process_attribute_data(attribute_list, ATTRIBUTE_PREFIX, 'data/product.attribute.csv', {'worker' : 4, 'batch_size' : 10,
                                                                                                   'context' : context})
-                                                                                                  
+
 #STEP 5: Attribute Value
 attribue_value_mapping = {
     #Concat attribute name and attribute value to give the name of the xml_id
@@ -72,21 +73,29 @@ line_mapping = {
    'value_ids/id' : mapper.m2m_id_list(ATTRIBUTE_VALUE_PREFIX, *[mapper.concat_field_value_m2m('_', f) for f in attribute_list]),
 }
 context['update_many2many'] = True
-processor.process(line_mapping, 'data/product.attribute.line.csv', { 'worker' : 3, 'batch_size' : 50,
+
+# processor.process(line_mapping, 'data/product.template.attribute.line.set.csv', { 'worker' : 1, 'batch_size' : 25,
+#                                                                                          'context' : dict(context),
+#                                                                                          'groupby' : 'product_tmpl_id/id'}, 'set', m2m=True)
+# Hack we need double execution to ensure all records are created.
+processor.process(line_mapping, 'data/product.template.attribute.line.csv', { 'worker' : 1, 'batch_size' : 25,
                                                                                          'context' : dict(context),
                                                                                          'groupby' : 'product_tmpl_id/id'}, m2m=True)
 context.pop('update_many2many')
 
 #STEP 7: Product Variant
 product_mapping = {
-   'id' : mapper.m2o_map(PRODUCT_PREFIX, mapper.concat('_', 'barcode', 'Color', 'Gender', 'Size_H', 'Size_W'), skip=True),
+   'id' : mapper.m2o_map(PRODUCT_PREFIX, mapper.concat('_', 'ref', 'Color', 'Gender', 'Size_H', 'Size_W'), skip=True),
    'barcode' : mapper.val('barcode'),
    'product_tmpl_id/id' : mapper.m2o(TEMPLATE_PREFIX, 'ref'),
-   'attribute_value_ids/id' : mapper.m2m_attribute_value(ATTRIBUTE_VALUE_PREFIX, 'Color', 'Gender', 'Size_H', 'Size_W'),
+   'product_template_attribute_value_ids/id': mapper.m2m_template_attribute_value(
+           PT_ATTRIBUTE_VALUE_PREFIX, 'ref', 'Color', 'Gender', 'Size_H', 'Size_W'
+       ),
+
    'default_code': mapper.val('ref'),
    'standard_price': mapper.num('cost'),
 }
-processor.process(product_mapping, 'data/product.product.csv', { 'worker' : 3, 'batch_size' : 50,
+processor.process(product_mapping, 'data/product.product.csv', { 'worker' : 3, 'batch_size' : 25,
                                                                            'groupby' : 'product_tmpl_id/id',
                                                                            'context' : context}, 'set')
 
@@ -94,5 +103,4 @@ processor.process(product_mapping, 'data/product.product.csv', { 'worker' : 3, '
 processor.write_to_file("4_product_import.sh", python_exe='', path='')
 
 
-print 'Product Done'
-
+print('Product Done')

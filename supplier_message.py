@@ -9,13 +9,15 @@ processor = Processor('origin/message.csv')
 
 ##STEP 2 : Define the mapping for every object to import
 mapping =  {
-    'id' : mapper.m2o_map(MESSAGE_PREFIX, mapper.concat("_", 'Company_ID', 'Date')),
-    'res_external_id' : mapper.m2o(SUPPLIER_PREFIX, 'Company_ID'),
+    # External ID is not allowed to be imported
+    # 'id' : mapper.m2o_map(MESSAGE_PREFIX, mapper.concat("_", 'Company_ID', 'Date')),
+    # 'res_external_id' : mapper.m2o(SUPPLIER_PREFIX, 'Company_ID'),
+    'message_type': mapper.const('email'),
     'author_id/id': mapper.m2o(SUPPLIER_CONTACT_PREFIX, 'from'),
     'email_from': mapper.val('from'),
     'subject': mapper.val('subject'),
     'body': mapper.val('body'),
-    'date': mapper.val('Date', 
+    'date': mapper.val('Date',
        postprocess=lambda x: datetime.strptime(x, "%d/%m/%y %H:%M:%S").strftime("%Y-%m-%d %H:%M:%S")),
 }
 
@@ -25,4 +27,4 @@ processor.process(mapping, 'data/mail.message.csv', {})
 #Step 5: Define output and import parameter
 processor.write_to_file("3_supplier_message.sh", python_exe='', path='')
 
-print 'Supplier Message Done'
+print('Supplier Message Done')

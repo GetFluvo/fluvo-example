@@ -16,6 +16,7 @@ CATEGORY_PREFIX = "PRODUCT_CATEGORY"
 
 ATTRIBUTE_PREFIX = "PRODUCT_ATTRIBUTE"
 ATTRIBUTE_VALUE_PREFIX = "PRODUCT_ATTRIBUTE_VALUE"
+PT_ATTRIBUTE_VALUE_PREFIX = "product_template_attribute_value"
 ATTRIBUTE_LINE_PREFIX = "PRODUCT_ATTRIBUTE_LINE"
 
 
@@ -32,6 +33,6 @@ country_map = {
 lang_map = {
     '' : '',
     'French' : u'French (BE) / Français (BE)',
-    'English' : u'English',
+    'English' : u'English (US)',
     'Dutch' : u'Dutch / Nederlands',
 }

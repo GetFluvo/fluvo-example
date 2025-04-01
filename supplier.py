@@ -16,7 +16,6 @@ mapping =  {
     'city' : mapper.val('city'),
     'zip' : mapper.val('zip code'),
     'country_id/id' : mapper.map_val('country', country_map),
-    'supplier' : mapper.const('1'),
     'user_id': mapper.val('Account_Manager'),
 }
 
@@ -27,7 +26,7 @@ contact_mapping = {
     'name': mapper.concat(' ',  'Contact First Name', 'Contact Last Name'),
     'title/id': mapper.m2o(TITLE_PREFIX, 'Contact Title'),
 }
- 
+
 title_map = {
     'id': mapper.m2o(TITLE_PREFIX, 'Contact Title'),
     'name': mapper.val('Contact Title', skip=True),
@@ -44,4 +43,4 @@ processor.process(contact_mapping, 'data/res.partner.supplier.contact.csv', { 'm
 #Step 5: Define output and import parameter
 processor.write_to_file("2_supplier.sh", python_exe='', path='')
 
-print 'Supplier Done'
+print('Supplier Done')
