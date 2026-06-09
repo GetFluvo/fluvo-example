@@ -1,0 +1,11 @@
+; Copy to conf/prod_connection.conf and fill in your production credentials.
+; The "prod" prefix makes Fluvo route this environment's fail/recovery files
+; into data/prod/ so they never mix with your test runs.
+[Connection]
+hostname = odoo.yourcompany.com
+database = production
+login = integration_user
+password = <your-password>
+protocol = jsonrpcs
+port = 443
+uid = 2

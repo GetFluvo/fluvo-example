@@ -6,7 +6,7 @@ from fluvo.lib.transform import Processor
 from datetime import datetime
 from prefix import SUPPLIER_PREFIX, MESSAGE_PREFIX, SUPPLIER_CONTACT_PREFIX
 
-CONFIG = 'conf%sconnection.conf' % os.sep
+CONFIG = 'conf%stest_connection.conf' % os.sep
 SOURCE = 'origin%smessage.csv' % os.sep
 
 # Force the date column to a string so Polars does not reject the

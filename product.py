@@ -5,7 +5,7 @@ from fluvo.lib import mapper
 from fluvo.lib.transform import ProductProcessorV10
 from prefix import *
 
-CONFIG = 'conf%sconnection.conf' % os.sep
+CONFIG = 'conf%stest_connection.conf' % os.sep
 SOURCE = 'origin%sproduct.csv' % os.sep
 
 context = {'create_product_product' : False, 'tracking_disable' : True}
