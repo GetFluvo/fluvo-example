@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo_csv_tools.lib import mapper
-from odoo_csv_tools.lib.transform import Processor
+from fluvo.lib import mapper
+from fluvo.lib.transform import Processor
 from datetime import datetime
 from prefix import SUPPLIER_PREFIX, MESSAGE_PREFIX, SUPPLIER_CONTACT_PREFIX
 

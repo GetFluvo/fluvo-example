@@ -1,7 +1,21 @@
-This is a demonstration for the usage of https://github.com/OdooDataFlow/odoo-data-flow and https://github.com/tfrancoi/easier_import
+This is a demonstration for the usage of [fluvo](https://github.com/GetFluvo/fluvo) and https://github.com/GetFluvo/addons
+
+Choosing the right branch (one branch per Odoo version)
+=======================================================
+This repository is organised with one branch per Odoo major version. Check out
+the branch that matches the version of the Odoo server you are importing into:
+
+    11.0           -> Odoo 11 (this branch)
+    18.0 (default) -> Odoo 18
+    19.0           -> Odoo 19 (uses the json2 protocol with an API key)
+
+    git checkout 11.0   # for an Odoo 11 server (this branch)
+    git checkout 18.0   # for an Odoo 18 server (default)
+    git checkout 19.0   # for an Odoo 19 server
 
 Installation
 ============
+0) Install fluvo: `pip install fluvo` (or `uv pip install fluvo`)
 1) Create an odoo 11 database named "load" with sale_management, import_metadata, import_res_id and purchase installed
 2) Create users with name and login Thibault and Francois
 3) activate the following lang French (BE) / Français (BE), English, Dutch / Nederlands
@@ -10,8 +24,10 @@ Your are good to go
 
 Test
 ====
- 
+
 sh transform.sh
 sh load.sh
+
+The transform scripts generate the `fluvo import` load commands.
 
 You've all your data into your database

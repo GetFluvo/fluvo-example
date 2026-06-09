@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo_csv_tools.lib import mapper
-from odoo_csv_tools.lib.transform import ProductProcessorV10
+from fluvo.lib import mapper
+from fluvo.lib.transform import ProductProcessorV10
 from prefix import *
 
 context = {'create_product_product' : True, 'tracking_disable' : True}
