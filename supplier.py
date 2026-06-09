@@ -1,21 +1,22 @@
 # -*- coding: utf-8 -*-
+import os
 from fluvo.lib import mapper
 from fluvo.lib.transform import Processor
 from datetime import datetime
 from prefix import *
 
-#STEP 1 : read the needed file(s)
-processor = Processor('origin/supplier.csv')
+CONFIG = 'conf%sconnection.conf' % os.sep
+SOURCE = 'origin%ssupplier.csv' % os.sep
 
-##STEP 2 : Define the mapping for every object to import
-mapping =  {
+##STEP 1 : Define the mapping for every object to import
+mapping = {
     'id' : mapper.m2o(SUPPLIER_PREFIX, 'Company_ID'),
     'name' : mapper.val('Company_Name'),
     'phone' : mapper.val('Phone'),
     'street' : mapper.val('address1'),
     'city' : mapper.val('city'),
     'zip' : mapper.val('zip code'),
-    'country_id/id' : mapper.map_val('country', country_map),
+    'country_id/id' : mapper.map_val(country_map, 'country'),
     'user_id': mapper.val('Account_Manager'),
 }
 
@@ -33,14 +34,24 @@ title_map = {
     'shortcut': mapper.val('Contact Title')
 }
 
+#STEP 2 : Read the source file once and process every mapping.
+# Titles and supplier companies are referenced by the contacts, so they are
+# written to the load script before the contacts (append=True everywhere
+# because client.py already created load.sh in this run).
+title_processor = Processor(title_map, source_filename=SOURCE, config_file=CONFIG)
+title_processor.process('data%sres.partner.title.csv' % os.sep, {}, 'set')
+title_processor.write_to_file("load.sh", python_exe='', path='', append=True)
 
+supplier_processor = Processor(mapping, dataframe=title_processor.dataframe,
+                               config_file=CONFIG)
+supplier_processor.process('data%sres.partner.supplier.csv' % os.sep,
+                           {'model': 'res.partner'})
+supplier_processor.write_to_file("load.sh", python_exe='', path='', append=True)
 
-#Step 4: Process data
-processor.process(title_map, 'data/res.partner.title.csv', {}, 'set')
-processor.process(mapping, 'data/res.partner.supplier.csv', { 'model': 'res.partner'})
-processor.process(contact_mapping, 'data/res.partner.supplier.contact.csv', { 'model': 'res.partner'})
-
-#Step 5: Define output and import parameter
-processor.write_to_file("2_supplier.sh", python_exe='', path='')
+contact_processor = Processor(contact_mapping, dataframe=title_processor.dataframe,
+                              config_file=CONFIG)
+contact_processor.process('data%sres.partner.supplier.contact.csv' % os.sep,
+                          {'model': 'res.partner'})
+contact_processor.write_to_file("load.sh", python_exe='', path='', append=True)
 
 print('Supplier Done')
