@@ -5,7 +5,7 @@ from fluvo.lib.transform import Processor
 from datetime import datetime
 from prefix import *
 
-CONFIG = 'conf%sconnection.conf' % os.sep
+CONFIG = 'conf%stest_connection.conf' % os.sep
 SOURCE = 'origin%ssupplier.csv' % os.sep
 
 ##STEP 1 : Define the mapping for every object to import

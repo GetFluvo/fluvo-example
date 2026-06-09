@@ -22,20 +22,33 @@ Odoo 19 connection (json2 + API key)
 ====================================
 Odoo 19 deprecates the old JSON-RPC. fluvo connects to Odoo 19+ with the
 **`json2`** protocol, which authenticates with an **API key instead of a
-password**. In `conf/connection.conf` this branch therefore sets:
+password**. In `conf/test_connection.conf` this branch therefore sets:
 
     protocol = json2
     api_key  = <your-odoo-api-key>
 
 Generate the API key in Odoo: **Settings -> Users -> API Keys** (on your own
-user), then paste it into `conf/connection.conf` in place of the placeholder.
+user), then paste it into `conf/test_connection.conf` in place of the placeholder.
 Keep the `login` set to that same user.
+
+Environments (test / prod)
+==========================
+This example connects to a local test database, so its connection file is named
+**`conf/test_connection.conf`**. Fluvo reads the environment from that prefix and
+keeps each environment's fail/recovery files separate — a `test_connection.conf`
+run writes failures to `data/test/`, a `prod_connection.conf` run to `data/prod/`.
+
+To promote the same import to production, copy `conf/prod_connection.conf.example`
+to `conf/prod_connection.conf`, fill in your credentials, and point your scripts at
+it (set `CONFIG = 'conf%sprod_connection.conf' % os.sep`). See the
+[Fluvo configuration guide](https://fluvo.readthedocs.io/en/latest/guides/configuration.html#managing-multiple-environments)
+for details.
 
 Installation
 ============
 0) Install fluvo: `pip install fluvo` (or `uv pip install fluvo`)
 1) Create an odoo 19 database named "load" with sale_management, purchase and [product_template_attribute_value_xmlid](https://github.com/GetFluvo/addons/tree/18.0/product_template_attribute_value_xmlid) installed
-2) Check the settings in conf/connection.conf (set `protocol = json2` and your `api_key`)
+2) Check the settings in conf/test_connection.conf (set `protocol = json2` and your `api_key`)
 3) Create users with name and login Thibault and Francois
 4) activate the following lang French (BE) / Français (BE), English, Dutch / Nederlands
 
